@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HALL OF FAME | Legends Never Fade</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
+
+<style>
+:root {
+ --bg:#080b14;
+ --panel:#111827;
+ --panel2:#172033;
+ --text:#f8fafc;
+ --muted:#9ca3af;
+ --gold:#e8bd62;
+ --gold2:#fff0b5;
+ --line:#273449;
+ --accent:#7c5cff;
+ --red:#e65d6c;
+ --green:#42c995;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+ background:var(--bg);color:var(--text);
+ font-family:Inter,sans-serif;
+ transition:.3s;min-height:100vh;
+}
+body.light{
+ --bg:#f4f1e9;--panel:#fff;--panel2:#f0eadc;
+ --text:#172033;--muted:#6b7280;--line:#ded7c8;
+}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+.gold{color:var(--gold)}
+.cinzel{font-family:Cinzel,serif}
+.hidden{display:none!important}
+.topbar{
+ height:76px;padding:0 6%;display:flex;align-items:center;
+ justify-content:space-between;border-bottom:1px solid var(--line);
+ position:sticky;top:0;background:var(--bg);z-index:20;
+}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-icon{font-size:31px;color:var(--gold)}
+.brand h2{font:700 19px Cinzel;letter-spacing:2px}
+.brand small{display:block;font-size:9px;color:var(--muted);letter-spacing:3px}
+.nav{display:flex;gap:22px;align-items:center}
+.nav button,.iconbtn{
+ background:none;border:0;color:var(--muted);font-size:13px;
+}
+.nav button:hover{color:var(--gold)}
+.iconbtn{font-size:21px}
+.primary{
+ background:linear-gradient(135deg,#f3d58b,#c28a32);
+ color:#15110a;border:0;border-radius:7px;padding:12px 20px;
+ font-weight:800;
+}
+.secondary{
+ background:var(--panel2);border:1px solid var(--line);
+ color:var(--text);border-radius:7px;padding:11px 17px;
+}
+.hero{
+ min-height:570px;display:flex;flex-direction:column;
+ align-items:center;justify-content:center;text-align:center;
+ padding:65px 20px;position:relative;overflow:hidden;
+ background:
+ radial-gradient(ellipse at 50% 45%,#62451c55,transparent 48%),
+ linear-gradient(180deg,transparent,#080b14);
+}
+.hero:before{
+ content:"";position:absolute;inset:0;opacity:.12;
+ background-image:linear-gradient(90deg,var(--gold) 1px,transparent 1px),
+ linear-gradient(var(--gold) 1px,transparent 1px);
+ background-size:60px 60px;
+ mask-image:linear-gradient(to bottom,black,transparent);
+}
+.hero>*{position:relative}
+.eyebrow{color:var(--gold);letter-spacing:5px;font-size:11px;font-weight:800}
+.hero h1{
+ font:900 clamp(48px,9vw,100px) Cinzel;
+ line-height:1.1;margin:25px 0;
+ background:linear-gradient(180deg,#fff4cb,#d9a743);
+ color:transparent;background-clip:text;
+}
+.hero p{max-width:650px;color:var(--muted);line-height:1.8;font-size:15px}
+.hero-actions{display:flex;gap:12px;margin-top:30px;flex-wrap:wrap;justify-content:center}
+.hero-stat{
+ display:flex;gap:50px;margin-top:55px;flex-wrap:wrap;justify-content:center
+}
+.hero-stat strong{display:block;font:700 27px Cinzel;color:var(--gold)}
+.hero-stat span{font-size:10px;color:var(--muted);letter-spacing:2px}
+.section{padding:65px 6%;max-width:1500px;margin:auto}
+.section-head{display:flex;justify-content:space-between;align-items:end;gap:15px;margin-bottom:28px;flex-wrap:wrap}
+.section-head h2{font:700 29px Cinzel}
+.section-head p{color:var(--muted);font-size:12px;margin-top:7px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+.card{
+ background:var(--panel);border:1px solid var(--line);
+ border-radius:12px;padding:22px;transition:.25s;
+}
+.card:hover{transform:translateY(-4px);border-color:var(--gold)}
+.legend-card{text-align:center;position:relative;overflow:hidden}
+.avatar{
+ width:83px;height:83px;border-radius:50%;margin:0 auto 16px;
+ display:grid;place-items:center;font-size:33px;
+ background:linear-gradient(135deg,#8d692d,#f1d38b);
+ color:#1b160d;border:3px solid var(--gold);
+}
+.legend-card h3{font:700 17px Cinzel;margin-bottom:7px}
+.muted{color:var(--muted);font-size:12px}
+.tag{
+ display:inline-block;padding:6px 10px;border-radius:20px;
+ background:#d6a74520;color:var(--gold);font-size:10px;margin-top:12px
+}
+.card-actions{display:flex;justify-content:center;gap:9px;margin-top:17px}
+.card-actions button{padding:8px 11px}
+.search{
+ width:100%;max-width:420px;padding:13px 15px;
+ background:var(--panel);border:1px solid var(--line);
+ color:var(--text);border-radius:7px;outline:none;
+}
+.search:focus{border-color:var(--gold)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+.tab{
+ padding:10px 15px;border:1px solid var(--line);
+ background:var(--panel);color:var(--muted);border-radius:7px;
+}
+.tab.active{background:var(--gold);color:#17120a;border-color:var(--gold)}
+.achievement{
+ display:flex;gap:15px;align-items:center;
+}
+.trophy{font-size:32px;color:var(--gold)}
+.achievement h3{font-size:14px;margin-bottom:6px}
+.rank{
+ font:700 20px Cinzel;color:var(--gold);min-width:35px;
+}
+.form-card{max-width:650px}
+.field{margin:15px 0}
+.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:7px}
+.field input,.field textarea,.field select{
+ width:100%;padding:13px;border-radius:7px;
+ border:1px solid var(--line);background:var(--bg);
+ color:var(--text);outline:none;
+}
+.field textarea{min-height:100px;resize:vertical}
+.notice{padding:12px;border-radius:7px;margin:12px 0;font-size:13px}
+.notice.error{background:#e65d6c20;color:#ff929c}
+.notice.success{background:#42c99520;color:#42c995}
+.panel-title{font:700 20px Cinzel;margin-bottom:20px}
+footer{
+ border-top:1px solid var(--line);padding:35px 6%;
+ text-align:center;color:var(--muted);font-size:12px;line-height:2
+}
+#authView{
+ min-height:100vh;display:grid;place-items:center;padding:20px;
+ background:radial-gradient(ellipse at center,#49351d55,transparent 60%);
+}
+.authbox{
+ width:100%;max-width:430px;background:var(--panel);
+ border:1px solid var(--line);border-radius:15px;padding:35px;
+}
+.authbox h1{text-align:center;font:800 28px Cinzel;color:var(--gold)}
+.authbox p{text-align:center;color:var(--muted);font-size:12px;margin:10px 0 24px}
+.app-content{max-width:1500px;margin:auto}
+.mobile-menu{display:none}
+@media(max-width:700px){
+ .nav{display:none}
+ .mobile-menu{display:block}
+ .topbar{padding:0 4%}
+ .hero{min-height:500px}
+ .hero-stat{gap:25px}
+ .section{padding:45px 5%}
+}
+</style>
+</head>
+
+<body>
+
+<!-- AUTHENTICATION -->
+<div id="authView">
+ <div class="authbox">
+  <div class="brand" style="justify-content:center">
+   <span class="brand-icon">♛</span>
+   <h2 class="cinzel">HALL OF FAME</h2>
+  </div>
+  <h1 id="authHeading" style="margin-top:25px">WELCOME BACK</h1>
+  <p>THE LEGACY BEGINS WITH YOU</p>
+  <div id="authNotice"></div>
+  <form id="authForm">
+   <div class="field hidden" id="nameField">
+    <label>YOUR FULL NAME</label>
+    <input id="displayName" placeholder="Enter your name">
+   </div>
+   <div class="field">
+    <label>EMAIL ADDRESS</label>
+    <input id="email" type="email" required placeholder="you@example.com">
+   </div>
+   <div class="field">
+    <label>PASSWORD</label>
+    <input id="password" type="password" required minlength="6" placeholder="Enter password">
+   </div>
+   <button class="primary" id="authSubmit" style="width:100%">SIGN IN</button>
+  </form>
+  <p style="margin-top:20px">
+   <span id="authSwitchText">New here?</span>
+   <button class="gold" id="authSwitch" style="background:none;border:0">Create account</button>
+  </p>
+  <button class="secondary" id="backHome" style="width:100%">BACK TO HALL</button>
+ </div>
+</div>
+
+<!-- MAIN WEBSITE -->
+<div id="appView" class="hidden">
+
+<header class="topbar">
+ <div class="brand">
+  <span class="brand-icon">♛</span>
+  <div>
+   <h2>HALL OF FAME</h2>
+   <small>LEGENDS NEVER FADE</small>
+  </div>
+ </div>
+ <nav class="nav">
+  <button data-target="home">HOME</button>
+  <button data-target="legends">LEGENDS</button>
+  <button data-target="leaderboard">LEADERBOARD</button>
+  <button data-target="museum">MUSEUM</button>
+  <button data-target="submit">SUBMIT</button>
+ </nav>
+ <div style="display:flex;align-items:center;gap:13px">
+  <button class="iconbtn" id="themeToggle">☼</button>
+  <button class="secondary" id="logoutBtn">LOG OUT</button>
+ </div>
+</header>
+
+<div class="app-content">
+<div id="globalNotice"></div>
+
+<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 6%;gap:10px">
+    <span>Welcome, <strong id="who">Student</strong></span>
+    <span id="rolePill" class="tag">STUDENT</span>
+    <button id="adminTab" class="secondary"
+    onclick="document.getElementById('admin').scrollIntoView({behavior:'smooth'})">
+        ADMIN CONTROL
+    </button>
+</div>
+<section class="hero" id="home">
+ <div class="eyebrow">✦ CELEBRATING EXCELLENCE ✦</div>
+ <h1>HALL OF<br>FAME</h1>
+ <p>
+  Every achievement tells a story. Every legend inspires a generation.
+  Discover the extraordinary students who made history.
+ </p>
+ <div class="hero-actions">
+  <button class="primary" data-target="legends">EXPLORE LEGENDS</button>
+  <button class="secondary" data-target="submit">NOMINATE A LEGEND</button>
+ </div>
+ <div class="hero-stat">
+  <div><strong id="statAchievements">0</strong><span>ACHIEVEMENTS</span></div>
+  <div><strong id="statStudents">0</strong><span>LEGENDS</span></div>
+  <div><strong id="statMine">0</strong><span>MY FAVOURITES</span></div>
+ </div>
+</section>
+
+<section class="section" id="legends">
+ <div class="section-head">
+  <div>
+   <div class="eyebrow">THE EXTRAORDINARY</div>
+   <h2>LEGENDARY PROFILES</h2>
+   <p>Meet the achievers who made a difference.</p>
+  </div>
+  <input class="search" id="searchBox" placeholder="Search legends, awards, categories...">
+ </div>
+ <div class="grid" id="archiveList"></div>
+</section>
+
+<section class="section" id="leaderboard">
+ <div class="section-head">
+  <div>
+   <div class="eyebrow">THE BEST OF THE BEST</div>
+   <h2>HALL OF LEADERS</h2>
+   <p>Celebrating outstanding achievements.</p>
+  </div>
+ </div>
+ <div class="card" id="leaderboardList"></div>
+</section>
+
+<section class="section" id="museum">
+ <div class="section-head">
+  <div>
+   <div class="eyebrow">PRESERVING HISTORY</div>
+   <h2>THE ACHIEVEMENT MUSEUM</h2>
+   <p>A collection of excellence through the years.</p>
+  </div>
+ </div>
+ <div class="tabs" id="yearTabs"></div>
+ <div class="grid" id="museumList"></div>
+</section>
+
+<section class="section" id="favourites">
+ <div class="section-head">
+  <div>
+   <div class="eyebrow">YOUR PERSONAL COLLECTION</div>
+   <h2>FAVOURITE ACHIEVERS</h2>
+  </div>
+ </div>
+ <div class="grid" id="favouritesList"></div>
+</section>
+
+<section class="section" id="submit">
+ <div class="section-head">
+  <div>
+   <div class="eyebrow">MAKE YOUR MARK</div>
+   <h2>SUBMIT AN ACHIEVEMENT</h2>
+   <p>Share an achievement for admin review.</p>
+  </div>
+ </div>
+ <div class="card form-card">
+  <form id="submissionForm">
+   <div class="field">
+    <label>ACHIEVEMENT TITLE</label>
+    <input id="subTitle" required placeholder="e.g. National Science Olympiad">
+   </div>
+   <div class="field">
+    <label>DESCRIPTION</label>
+    <textarea id="subDescription" placeholder="Describe your achievement..."></textarea>
+   </div>
+   <button class="primary">SUBMIT FOR REVIEW</button>
+  </form>
+  <div id="mySubmissions" style="margin-top:25px"></div>
+ </div>
+</section>
+
+<section class="section" id="messages">
+ <div class="section-head">
+  <div>
+   <div class="eyebrow">STAY CONNECTED</div>
+   <h2>MY MESSAGES</h2>
+  </div>
+ </div>
+ <div class="card form-card">
+  <form id="messageForm">
+   <div class="field">
+    <label>MESSAGE TO ADMIN</label>
+    <textarea id="messageText" required placeholder="Write your message..."></textarea>
+   </div>
+   <button class="primary">SEND MESSAGE</button>
+  </form>
+  <div id="myMessages" style="margin-top:25px"></div>
+ </div>
+</section>
+
+<!-- ADMIN CONTROL ROOM -->
+<section class="section hidden" id="admin">
+ <div class="eyebrow">RESTRICTED ACCESS</div>
+ <h2 class="cinzel" style="font-size:32px;margin:12px 0 25px">ADMIN CONTROL ROOM</h2>
+ <div class="tabs">
+  <button class="tab active" data-admin="pending">SUBMISSIONS</button>
+  <button class="tab" data-admin="add">ADD ACHIEVEMENT</button>
+  <button class="tab" data-admin="messages">MESSAGES</button>
+ </div>
+ <div id="adminPending">
+  <div class="card" id="pendingList"></div>
+ </div>
+ <div id="adminAdd" class="hidden">
+  <div class="card form-card">
+   <form id="adminAchievementForm">
+    <div class="field"><label>ACHIEVEMENT TITLE</label><input id="adminTitle" required></div>
+    <div class="field"><label>STUDENT NAME</label><input id="adminStudent" required></div>
+    <div class="field"><label>CATEGORY</label>
+     <select id="adminCategory">
+      <option>Academics</option><option>Sports</option><option>Arts</option>
+      <option>Leadership</option><option>Innovation</option><option>Other</option>
+     </select>
+    </div>
+    <div class="field"><label>YEAR</label><input id="adminYear" type="number" required></div>
+    <div class="field"><label>DESCRIPTION</label><textarea id="adminDescription"></textarea></div>
+    <button class="primary">PUBLISH ACHIEVEMENT</button>
+   </form>
+  </div>
+ </div>
+ <div id="adminMessages" class="hidden card"></div>
+</section>
+
+</div>
+
+<footer>
+ <div class="cinzel gold" style="font-size:20px">♛ HALL OF FAME</div>
+ LEGENDS NEVER FADE. ACHIEVEMENTS LIVE FOREVER.
+ <br>Created to celebrate excellence.
+</footer>
+</div>
+
+<script>
+/* =========================================
+   HALL OF FAME — SUPABASE CONNECTION
+========================================= */
+
+// 1. YOUR SUPABASE CREDENTIALS
+
+const SUPABASE_URL = "https://kcoiithfdrsbfvemytgh.supabase.co/rest/v1/";
+const SUPABASE_KEY = "sb_publishable_au0B2dm8vqr5FOXCVux6Xg_uheMUfAc";
+
+const db = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+// 2. APP DATA
+
+let currentUser = null;
+let currentProfile = null;
+let achievements = [];
+let favourites = [];
+let submissions = [];
+let isSignup = false;
+let selectedYear = "ALL";
+
+const $ = id => document.getElementById(id);
+
+function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, c => ({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#039;"
+    })[c]);
+}
+
+function notify(message, type = "success") {
+    const box = $("globalNotice");
+    if (!box) {
+        alert(message);
+        return;
+    }
+
+    box.textContent = message;
+    box.className = "notice " + type;
+
+    setTimeout(() => {
+        box.textContent = "";
+        box.className = "";
+    }, 4000);
+}
+
+// 3. AUTHENTICATION
+
+function showAuth(message = "") {
+    $("authView").classList.remove("hidden");
+    $("appView").classList.add("hidden");
+
+    $("authNotice").textContent = message;
+}
+
+function showApp() {
+    $("authView").classList.add("hidden");
+    $("appView").classList.remove("hidden");
+}
+
+$("authSwitch").onclick = () => {
+    isSignup = !isSignup;
+
+    $("authHeading").textContent =
+        isSignup ? "CREATE ACCOUNT" : "WELCOME BACK";
+
+    $("nameField").classList.toggle("hidden", !isSignup);
+
+    $("authSubmit").textContent =
+        isSignup ? "CREATE ACCOUNT" : "SIGN IN";
+
+    $("authSwitchText").textContent =
+        isSignup ? "Already registered?" : "New here?";
+
+    $("authSwitch").textContent =
+        isSignup ? "Sign in" : "Create account";
+
+    $("authNotice").textContent = "";
+};
+
+$("backHome").onclick = () => {
+    showAuth();
+};
+
+$("authForm").onsubmit = async event => {
+    event.preventDefault();
+
+    const email = $("email").value.trim();
+    const password = $("password").value;
+
+    $("authSubmit").disabled = true;
+
+    try {
+        let result;
+
+        if (isSignup) {
+            const name = $("displayName").value.trim();
+
+            if (!name) throw new Error("Enter your name.");
+
+            result = await db.auth.signUp({
+                email,
+                password,
+                options: {
+                    data: { display_name: name }
+                }
+            });
+
+            if (result.error) throw result.error;
+
+            if (!result.data.session) {
+                $("authNotice").textContent =
+                    "Account created! Confirm your email, then sign in.";
+                return;
+            }
+        } else {
+            result = await db.auth.signInWithPassword({
+                email,
+                password
+            });
+
+            if (result.error) throw result.error;
+        }
+
+        await startApp();
+
+    } catch (error) {
+        $("authNotice").textContent = error.message;
+    } finally {
+        $("authSubmit").disabled = false;
+    }
+};
+
+// 4. USER PROFILE
+
+async function ensureProfile(user) {
+    const { data, error } = await db
+        .from("hof_profiles")
+        .select("*")
+        .eq("id", user.id)
+        .maybeSingle();
+
+    if (error) throw error;
+
+    if (data) return data;
+
+    const name =
+        user.user_metadata?.display_name ||
+        user.email.split("@")[0];
+
+    const { data: created, error: createError } = await db
+        .from("hof_profiles")
+        .insert({
+            id: user.id,
+            display_name: name,
+            role: "student"
+        })
+        .select()
+        .single();
+
+    if (createError) throw createError;
+
+    return created;
+}
+
+// 5. START APP
+
+async function startApp() {
+    const { data } = await db.auth.getSession();
+
+    currentUser = data.session?.user;
+
+    if (!currentUser) {
+        showAuth();
+        return;
+    }
+
+    try {
+        currentProfile = await ensureProfile(currentUser);
+
+        showApp();
+
+        $("who").textContent = currentProfile.display_name;
+        $("rolePill").textContent = currentProfile.role.toUpperCase();
+
+        $("adminTab").classList.toggle(
+            "hidden",
+            currentProfile.role !== "admin"
+        );
+
+        $("admin").classList.toggle(
+            "hidden",
+            currentProfile.role !== "admin"
+        );
+
+        await loadAll();
+
+    } catch (error) {
+        notify(error.message, "error");
+    }
+}
+
+// 6. LOAD DATA
+
+async function loadAll() {
+    await Promise.all([
+        loadAchievements(),
+        loadFavourites(),
+        loadSubmissions(),
+        loadMessages()
+    ]);
+
+    if (currentProfile.role === "admin") {
+        await loadAdmin();
+    }
+
+    updateStats();
+    renderEverything();
+    renderSubmissions();
+}
+
+async function loadAchievements() {
+    const { data, error } = await db
+        .from("hof_achievements")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    achievements = data || [];
+}
+
+async function loadFavourites() {
+    const { data, error } = await db
+        .from("hof_favourites")
+        .select("achievement_id")
+        .eq("user_id", currentUser.id);
+
+    if (error) throw error;
+
+    favourites = (data || []).map(x => x.achievement_id);
+}
+
+async function loadSubmissions() {
+    const { data, error } = await db
+        .from("hof_submissions")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    submissions = data || [];
+}
+
+async function loadMessages() {
+    const { data, error } = await db
+        .from("hof_messages")
+        .select("*")
+        .or(
+            `sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`
+        )
+        .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    $("myMessages").innerHTML = (data || []).map(m => `
+        <div class="card" style="margin-top:10px">
+            <p class="muted">
+                ${m.sender_id === currentUser.id ? "YOU SENT" : "ADMIN REPLIED"}
+            </p>
+            <p>${escapeHTML(m.message)}</p>
+        </div>
+    `).join("") || "<p class='muted'>No messages yet.</p>";
+}
+
+// 7. STATISTICS
+
+function updateStats() {
+    $("statAchievements").textContent = achievements.length;
+
+    $("statStudents").textContent =
+        new Set(achievements.map(a => a.student_name)).size;
+
+    $("statMine").textContent = favourites.length;
+}
+
+// 8. ACHIEVEMENT CARDS
+
+function achievementCard(a) {
+    const saved = favourites.includes(a.id);
+
+    return `
+        <div class="card legend-card">
+            <div class="avatar">♛</div>
+            <h3>${escapeHTML(a.student_name)}</h3>
+            <p class="muted">${escapeHTML(a.title)}</p>
+            <span class="tag">${escapeHTML(a.category || "Achievement")}</span>
+            <p class="muted" style="margin-top:12px">
+                ${escapeHTML(a.achievement_year || "")}
+            </p>
+            <p style="font-size:12px;margin-top:10px">
+                ${escapeHTML(a.description || "")}
+            </p>
+            <div class="card-actions">
+                <button class="secondary"
+                    onclick="toggleFavourite(${a.id})">
+                    ${saved ? "♥ Saved" : "♡ Favourite"}
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function renderEverything() {
+    renderArchive();
+    renderFavourites();
+    renderLeaderboard();
+    renderMuseum();
+}
+
+function renderArchive() {
+    const search = $("searchBox").value.toLowerCase();
+
+    const filtered = achievements.filter(a =>
+        [
+            a.title,
+            a.student_name,
+            a.category,
+            a.description,
+            a.achievement_year
+        ].join(" ").toLowerCase().includes(search)
+    );
+
+    $("archiveList").innerHTML =
+        filtered.map(achievementCard).join("") ||
+        "<p class='muted'>No achievements yet.</p>";
+}
+
+// 9. FAVOURITES
+
+async function toggleFavourite(id) {
+    try {
+        if (favourites.includes(id)) {
+            const { error } = await db
+                .from("hof_favourites")
+                .delete()
+                .eq("user_id", currentUser.id)
+                .eq("achievement_id", id);
+
+            if (error) throw error;
+
+            favourites = favourites.filter(x => x !== id);
+
+        } else {
+            const { error } = await db
+                .from("hof_favourites")
+                .insert({
+                    user_id: currentUser.id,
+                    achievement_id: id
+                });
+
+            if (error) throw error;
+
+            favourites.push(id);
+        }
+
+        updateStats();
+        renderEverything();
+
+    } catch (error) {
+        notify(error.message, "error");
+    }
+}
+
+function renderFavourites() {
+    const saved = achievements.filter(a =>
+        favourites.includes(a.id)
+    );
+
+    $("favouritesList").innerHTML =
+        saved.map(achievementCard).join("") ||
+        "<p class='muted'>No favourites yet.</p>";
+}
+
+// 10. LEADERBOARD
+
+function renderLeaderboard() {
+    const scores = {};
+
+    achievements.forEach(a => {
+        scores[a.student_name] =
+            (scores[a.student_name] || 0) + 1;
+    });
+
+    const leaders = Object.entries(scores)
+        .sort((a, b) => b[1] - a[1]);
+
+    $("leaderboardList").innerHTML = leaders.map((item, i) => `
+        <div class="achievement" style="padding:15px;border-bottom:1px solid var(--line)">
+            <div class="rank">#${i + 1}</div>
+            <div style="flex:1">
+                <strong>${escapeHTML(item[0])}</strong>
+                <div class="muted">${item[1]} achievements</div>
+            </div>
+            <div class="trophy">🏆</div>
+        </div>
+    `).join("") || "<p class='muted'>No leaders yet.</p>";
+}
+
+// 11. YEAR EXPLORER
+
+function renderMuseum() {
+    const years = [...new Set(
+        achievements.map(a => a.achievement_year).filter(Boolean)
+    )].sort((a, b) => b - a);
+
+    $("yearTabs").innerHTML = `
+        <button class="tab ${selectedYear === "ALL" ? "active" : ""}"
+            onclick="selectYear('ALL')">ALL YEARS</button>
+        ${years.map(year => `
+            <button class="tab ${selectedYear == year ? "active" : ""}"
+                onclick="selectYear('${year}')">${year}</button>
+        `).join("")}
+    `;
+
+    const filtered = achievements.filter(a =>
+        selectedYear === "ALL" ||
+        String(a.achievement_year) === String(selectedYear)
+    );
+
+    $("museumList").innerHTML =
+        filtered.map(achievementCard).join("") ||
+        "<p class='muted'>No achievements for this year.</p>";
+}
+
+function selectYear(year) {
+    selectedYear = year;
+    renderMuseum();
+}
+
+// 12. STUDENT SUBMISSIONS
+
+$("submissionForm").onsubmit = async event => {
+    event.preventDefault();
+
+    try {
+        const { error } = await db
+            .from("hof_submissions")
+            .insert({
+                user_id: currentUser.id,
+                title: $("subTitle").value.trim(),
+                description: $("subDescription").value.trim(),
+                status: "pending"
+            });
+
+        if (error) throw error;
+
+        $("submissionForm").reset();
+
+        notify("Achievement submitted!");
+
+        await loadSubmissions();
+        renderSubmissions();
+
+    } catch (error) {
+        notify(error.message, "error");
+    }
+};
+
+function renderSubmissions() {
+    $("mySubmissions").innerHTML = `
+        <h3 class="panel-title">MY SUBMISSIONS</h3>
+        ${submissions.map(s => `
+            <div class="card" style="margin-top:10px">
+                <strong>${escapeHTML(s.title)}</strong>
+                <span class="tag">${escapeHTML(s.status)}</span>
+            </div>
+        `).join("") || "<p class='muted'>No submissions yet.</p>"}
+    `;
+}
+
+// 13. MESSAGING
+
+$("messageForm").onsubmit = async event => {
+    event.preventDefault();
+
+    try {
+        const { data: admins, error: adminError } = await db
+            .from("hof_profiles")
+            .select("id")
+            .eq("role", "admin")
+            .limit(1);
+
+        if (adminError) throw adminError;
+        if (!admins?.length) throw new Error("No admin found.");
+
+        const { error } = await db
+            .from("hof_messages")
+            .insert({
+                sender_id: currentUser.id,
+                receiver_id: admins[0].id,
+                message: $("messageText").value.trim()
+            });
+
+        if (error) throw error;
+
+        $("messageForm").reset();
+        notify("Message sent!");
+        await loadMessages();
+
+    } catch (error) {
+        notify(error.message, "error");
+    }
+};
+
+// 14. ADMIN CONTROL ROOM
+
+async function loadAdmin() {
+    const { data, error } = await db
+        .from("hof_submissions")
+        .select("*")
+        .eq("status", "pending")
+        .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    $("pendingList").innerHTML = data.map(s => `
+        <div class="card" style="margin-bottom:12px">
+            <h3>${escapeHTML(s.title)}</h3>
+            <p class="muted">${escapeHTML(s.description || "")}</p>
+            <button class="primary"
+                onclick="reviewSubmission(${s.id},'approved')">
+                APPROVE
+            </button>
+            <button class="secondary"
+                onclick="reviewSubmission(${s.id},'rejected')">
+                REJECT
+            </button>
+        </div>
+    `).join("") || "<p class='muted'>No pending submissions.</p>";
+
+    const { data: messages, error: messageError } = await db
+        .from("hof_messages")
+        .select("*")
+        .eq("receiver_id", currentUser.id)
+        .order("created_at", { ascending: false });
+
+    if (messageError) throw messageError;
+
+    $("adminMessages").innerHTML = messages.map(m => `
+        <div class="card" style="margin-bottom:12px">
+            <p>${escapeHTML(m.message)}</p>
+            <textarea id="reply-${m.id}" placeholder="Write a reply..."></textarea>
+            <button class="primary"
+                onclick="replyMessage('${m.sender_id}',${m.id})">
+                SEND REPLY
+            </button>
+        </div>
+    `).join("") || "<p class='muted'>No messages received.</p>";
+}
+
+async function reviewSubmission(id, status) {
+    try {
+        const submission = submissions.find(s => s.id === id);
+
+        if (!submission) throw new Error("Submission not found.");
+
+        if (status === "approved") {
+            const { data: submitter, error: profileError } = await db
+                .from("hof_profiles")
+                .select("display_name")
+                .eq("id", submission.user_id)
+                .single();
+
+            if (profileError) throw profileError;
+
+            const { error: insertError } = await db
+                .from("hof_achievements")
+                .insert({
+                    title: submission.title,
+                    student_name: submitter.display_name,
+                    category: "Student Achievement",
+                    description: submission.description,
+                    achievement_year: new Date().getFullYear()
+                });
+
+            if (insertError) throw insertError;
+        }
+
+        const { error } = await db
+            .from("hof_submissions")
+            .update({ status })
+            .eq("id", id);
+
+        if (error) throw error;
+
+        notify("Submission " + status + "!");
+
+        await loadAll();
+
+    } catch (error) {
+        notify(error.message, "error");
+    }
+}
+
+$("adminAchievementForm").onsubmit = async event => {
+    event.preventDefault();
+
+    try {
+        const { error } = await db
+            .from("hof_achievements")
+            .insert({
+                title: $("adminTitle").value.trim(),
+                student_name: $("adminStudent").value.trim(),
+                category: $("adminCategory").value,
+                achievement_year: Number($("adminYear").value),
+                description: $("adminDescription").value.trim()
+            });
+
+        if (error) throw error;
+
+        $("adminAchievementForm").reset();
+
+        notify("Achievement published!");
+
+        await loadAll();
+
+    } catch (error) {
+        notify(error.message, "error");
+    }
+};
+
+async function replyMessage(receiverId, messageId) {
+    try {
+        const message = $("reply-" + messageId).value.trim();
+
+        if (!message) throw new Error("Write a reply first.");
+
+        const { error } = await db
+            .from("hof_messages")
+            .insert({
+                sender_id: currentUser.id,
+                receiver_id: receiverId,
+                message
+            });
+
+        if (error) throw error;
+
+        notify("Reply sent!");
+        await loadAdmin();
+
+    } catch (error) {
+        notify(error.message, "error");
+    }
+}
+
+// 15. NAVIGATION
+
+document.querySelectorAll("[data-target]").forEach(button => {
+    button.addEventListener("click", () => {
+        document.getElementById(button.dataset.target)
+            ?.scrollIntoView({ behavior: "smooth" });
+    });
+});
+
+$("searchBox").oninput = renderArchive;
+
+document.querySelectorAll("[data-admin]").forEach(button => {
+    button.onclick = () => {
+        document.querySelectorAll("[data-admin]").forEach(b =>
+            b.classList.remove("active")
+        );
+
+        button.classList.add("active");
+
+        const tab = button.dataset.admin;
+
+        $("adminPending").classList.toggle("hidden", tab !== "pending");
+        $("adminAdd").classList.toggle("hidden", tab !== "add");
+        $("adminMessages").classList.toggle("hidden", tab !== "messages");
+    };
+});
+
+// 16. LIGHT / DARK MODE
+
+$("themeToggle").onclick = () => {
+    document.body.classList.toggle("light");
+
+    $("themeToggle").textContent =
+        document.body.classList.contains("light") ? "☾" : "☼";
+};
+
+// 17. LOGOUT
+
+$("logoutBtn").onclick = async () => {
+    await db.auth.signOut();
+    currentUser = null;
+    currentProfile = null;
+    showAuth();
+};
+
+// 18. AUTH LISTENER
+
+db.auth.onAuthStateChange((event) => {
+    if (event === "SIGNED_OUT") {
+        currentUser = null;
+        currentProfile = null;
+        showAuth();
+    }
+});
+
+// 19. START
+
+(async function initialize() {
+    if (
+        SUPABASE_URL.includes("PASTE_") ||
+        SUPABASE_KEY.includes("PASTE_")
+    ) {
+        alert("Please add your Supabase URL and Publishable Key.");
+        showAuth();
+        return;
+    }
+
+    const { data } = await db.auth.getSession();
+
+    if (data.session) {
+        await startApp();
+    } else {
+        showAuth();
+    }
+})();
+
+</script>
+</body>
+</html>
